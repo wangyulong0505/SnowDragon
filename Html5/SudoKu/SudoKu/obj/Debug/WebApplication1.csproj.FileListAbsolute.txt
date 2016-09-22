@@ -1,0 +1,6 @@
+E:\wangshibang\SudoKu\WebApplication1\bin\WebApplication1.dll
+E:\wangshibang\SudoKu\WebApplication1\bin\WebApplication1.pdb
+E:\wangshibang\SudoKu\WebApplication1\obj\Debug\WebApplication1.csprojResolveAssemblyReference.cache
+E:\wangshibang\SudoKu\WebApplication1\obj\Debug\WebApplication1.dll
+E:\wangshibang\SudoKu\WebApplication1\obj\Debug\WebApplication1.pdb
+E:\wangshibang\SudoKu\WebApplication1\bin\WebApplication1.dll.config
