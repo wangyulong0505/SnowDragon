@@ -1,0 +1,6 @@
+E:\Githurb\SnowDragon\Html5\HtmlGames\HtmlGames\bin\HtmlGames.dll.config
+E:\Githurb\SnowDragon\Html5\HtmlGames\HtmlGames\bin\HtmlGames.dll
+E:\Githurb\SnowDragon\Html5\HtmlGames\HtmlGames\bin\HtmlGames.pdb
+E:\Githurb\SnowDragon\Html5\HtmlGames\HtmlGames\obj\Debug\HtmlGames.csprojResolveAssemblyReference.cache
+E:\Githurb\SnowDragon\Html5\HtmlGames\HtmlGames\obj\Debug\HtmlGames.dll
+E:\Githurb\SnowDragon\Html5\HtmlGames\HtmlGames\obj\Debug\HtmlGames.pdb
