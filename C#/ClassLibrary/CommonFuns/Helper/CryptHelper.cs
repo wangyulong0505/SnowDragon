@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
@@ -43,7 +44,7 @@ namespace CommonFuns.Helper
         /// </summary>
         /// <param name="strContent"></param>
         /// <returns>返回32位16进制数字字母，若要获取16位需要从32位中取16位</returns>
-        public static string EncryptSha1(string strContent)
+        public static string NewEncryptSha1(string strContent)
         {
             SHA1 sha1Hash = SHA1.Create();
             byte[] data = sha1Hash.ComputeHash(Encoding.UTF8.GetBytes(strContent));
@@ -63,7 +64,7 @@ namespace CommonFuns.Helper
         /// </summary>
         /// <param name="strContent"></param>
         /// <returns>返回32位16进制数字字母，若要获取16位需要从32位中取16位</returns>
-        public static string EncryptMd5(string strContent)
+        public static string NewEncryptMd5(string strContent)
         {
             MD5 md5Hash = MD5.Create();
             byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(strContent));
@@ -367,6 +368,105 @@ namespace CommonFuns.Helper
                     p.SetValue(reqData, UrlDecode(Convert.ToString(p.GetValue(reqData))), null);
                 }
             }
+        }
+
+        #endregion
+
+        #region AES加密
+
+        public static string EncryptText(string input, string key)
+        {
+            byte[] inputBytes = Encoding.UTF8.GetBytes(input);
+            byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+
+            keyBytes = SHA256.Create().ComputeHash(keyBytes);
+            byte[] bytesEncrypted = AESEncryptBytes(inputBytes, keyBytes);
+            string result = Convert.ToBase64String(bytesEncrypted);
+            return result;
+        }
+
+        private static byte[] AESEncryptBytes(byte[] inputBytes, byte[] keyBytes)
+        {
+            byte[] encryptedBytes = null;
+
+            var saltBytes = new byte[9] { 13, 34, 27, 67, 189, 255, 104, 219, 122 };
+
+            using (var ms = new MemoryStream())
+            {
+                using (RijndaelManaged AES = new RijndaelManaged())
+                {
+                    AES.KeySize = 256;
+                    AES.BlockSize = 128;
+
+                    var key = new Rfc2898DeriveBytes(keyBytes, saltBytes, 1000);
+                    AES.Key = key.GetBytes(32);
+                    AES.IV = key.GetBytes(16);
+
+                    AES.Mode = CipherMode.CBC;
+
+                    using (var cs = new CryptoStream(ms, AES.CreateEncryptor(),
+                        CryptoStreamMode.Write))
+                    {
+                        cs.Write(inputBytes, 0, inputBytes.Length);
+                        cs.Close();
+                    }
+
+                    encryptedBytes = ms.ToArray();
+                }
+            }
+
+            return encryptedBytes;
+        }
+
+        #endregion
+
+        #region AES解密
+
+        public static string DecryptText(string input, string key)
+        {
+            byte[] bytesToBeDecrypted = Convert.FromBase64String(input);
+
+            byte[] passwordBytes = Encoding.UTF8.GetBytes(key);
+
+            passwordBytes = SHA256.Create().ComputeHash(passwordBytes);
+
+            byte[] bytesDecrypted = AESDecryptBytes(bytesToBeDecrypted, passwordBytes);
+
+            string result = Encoding.UTF8.GetString(bytesDecrypted);
+
+            return result;
+        }
+
+        public static byte[] AESDecryptBytes(byte[] bytesToBeDecrypted, byte[] passwordBytes)
+        {
+            byte[] decryptedBytes = null;
+
+            var saltBytes = new byte[9] { 13, 34, 27, 67, 189, 255, 104, 219, 122 };
+
+            using (var ms = new MemoryStream())
+            {
+                using (var AES = new RijndaelManaged())
+                {
+                    AES.KeySize = 256;
+                    AES.BlockSize = 128;
+
+                    var key = new Rfc2898DeriveBytes(passwordBytes, saltBytes, 1000);
+                    AES.Key = key.GetBytes(32);
+                    AES.IV = key.GetBytes(16);
+
+                    AES.Mode = CipherMode.CBC;
+
+                    using (var cs = new CryptoStream(ms, AES.CreateDecryptor(), CryptoStreamMode.Write))
+                    {
+                        cs.Write(bytesToBeDecrypted, 0, bytesToBeDecrypted.Length);
+                        cs.Close();
+                    }
+
+                    decryptedBytes = ms.ToArray();
+                }
+            }
+
+            return decryptedBytes;
         }
 
         #endregion
